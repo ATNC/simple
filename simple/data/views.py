@@ -1,3 +1,4 @@
+#coding:utf-8
 from django.shortcuts import render
 from django.core.cache import cache
 from django.http import HttpResponse
@@ -8,6 +9,7 @@ def show_next(request):
     print itter
     if itter >= 0:
         items = Item.objects.filter(item_processed=False)
+        
         nxt = items[itter+1:]
         if nxt:
             cache.set('item', itter+1, 3000)
@@ -16,10 +18,14 @@ def show_next(request):
         response = "Id: %s, name: %s"%(items[itter].id, items[itter].item_name )
         return HttpResponse(response)
     else:
-        items = Item.objects.filter(item_processed=False)[0]
-        cache.set('item', 1, 3000)
-        response = "Id: %s, name: %s"%(items.id, items.item_name )
-        return HttpResponse(response)
+        items = Item.objects.filter(item_processed=False)
+        if items:
+            cache.set('item', 1, 3000)
+            response = "Id: %s, name: %s"%(items[0].id, items[0].item_name )
+            return HttpResponse(response)
+        else:
+            response = "В базі немає записів"
+            return HttpResponse(response)
 
 
 def processed(request, id):
