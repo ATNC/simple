@@ -9,7 +9,9 @@ def show_next(request):
     print itter
     if itter >= 0:
         items = Item.objects.filter(item_processed=False)
-        
+        if not items:
+            response = "В базі немає записів, або всі запити оброблені"
+            return HttpResponse(response)
         nxt = items[itter+1:]
         if nxt:
             cache.set('item', itter+1, 3000)
@@ -24,7 +26,7 @@ def show_next(request):
             response = "Id: %s, name: %s"%(items[0].id, items[0].item_name )
             return HttpResponse(response)
         else:
-            response = "В базі немає записів"
+            response = "В базі немає записів, або всі запити оброблені"
             return HttpResponse(response)
 
 
